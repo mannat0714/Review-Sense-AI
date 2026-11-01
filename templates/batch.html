@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% set active = 'batch' %}
+{% block title %}Batch analysis{% endblock %}
+{% block content %}
+<div class="col">
+  <h1>Batch analysis</h1>
+  <p class="sub">Upload a CSV with many reviews. We analyse all of them and show the overall summary.</p>
+
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+  <form method="post" enctype="multipart/form-data" class="card" id="batch-form">
+    <h2>Upload a CSV of reviews</h2>
+    <p class="note" style="margin-bottom:12px">The file needs a column with the review text, for example <strong>review</strong> or <strong>reviews.text</strong>.</p>
+    <div class="file"><input type="file" name="file" accept=".csv" required></div>
+    <button type="submit" class="btn" id="go">Analyse reviews</button>
+  </form>
+
+  {% if summary %}
+  <div class="card">
+    <h2>Summary</h2>
+    <div class="meta">
+      <div><span>Reviews analysed</span><strong>{{ summary.total }}</strong></div>
+      <div><span>Review column</span><strong>{{ summary.column }}</strong></div>
+    </div>
+    {% if summary.truncated %}
+    <p class="note">Only the first {{ summary.limit }} reviews were analysed.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Sentiment breakdown</h2>
+    {% for label in ['Positive','Neutral','Negative'] %}
+    <div class="bar-row">
+      <span>{{ label }}</span>
+      <div class="track"><div class="fill {{ label }}" style="width: {{ summary.percents[label] }}%"></div></div>
+      <small>{{ summary.percents[label] }}% ({{ summary.counts[label] }})</small>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h2>First 20 results</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Review</th><th>Sentiment</th></tr></thead>
+        <tbody>
+          {% for row in summary.rows %}
+          <tr>
+            <td class="rev">{{ row.review[:220] }}{% if row.review|length > 220 %}...{% endif %}</td>
+            <td><span class="pill {{ row.sentiment }}">{{ row.sentiment }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <a class="btn light" href="{{ url_for('batch_download') }}">Download full results (CSV)</a>
+  </div>
+  {% endif %}
+</div>
+<script>
+  document.getElementById('batch-form').addEventListener('submit', function () {
+    var b = document.getElementById('go'); b.disabled = true; b.textContent = 'Analysing...';
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}ReviewSense AI{% endblock %} - ReviewSense AI</title>
+<script>
+  /* apply saved theme before the page paints (no flash) */
+  (function () {
+    try { document.documentElement.setAttribute('data-theme', localStorage.getItem('rs-theme') || 'light'); }
+    catch (e) {}
+  })();
+</script>
+<style>
+  /* ===== Theme: Mocha Brown + Platinum Silver + Pale Lavender ===== */
+  :root{
+    --top-bg:#6F4E37; --brand:#6F4E37; --brand-dark:#573B29; --head:#573B29; --link:#6F4E37;
+    --silver:#E5E4E2; --lav:#E6E0F8; --lav-hover:#DAD2F3; --on-lav:#573B29;
+    --bg:#F5F3F7; --card:#FFFFFF; --field:#FCFBFD; --ink:#2A211B; --muted:#6B6460; --line:#E3DFE6;
+    --pos:#22A068; --neg:#DC4545; --neu:#8A8A8A;
+    --pos-bg:#E3F5EC; --neg-bg:#FBE6E6; --neu-bg:#EEEEEE;
+    --good-ink:#14633f; --bad-ink:#991b1b; --neu-ink:#555555;
+    --serif:Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    color-scheme:light;
+  }
+  :root[data-theme="dark"]{
+    --top-bg:#2B211A; --brand:#80593F; --brand-dark:#6A4932; --head:#EBD8C6; --link:#D9B99B;
+    --silver:#332C26; --lav:#342E4A; --lav-hover:#433B5E; --on-lav:#E7DEFA;
+    --bg:#16120F; --card:#221C17; --field:#1B1612; --ink:#F0E9E2; --muted:#B3A79D; --line:#3A312A;
+    --pos:#3DBF86; --neg:#F06B6B; --neu:#9A9A9A;
+    --pos-bg:#173526; --neg-bg:#3B1D1D; --neu-bg:#353535;
+    --good-ink:#86E8B8; --bad-ink:#FFA9A9; --neu-ink:#D0D0D0;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5}
+
+  /* ---- top bar ---- */
+  .top{background:var(--top-bg);color:#fff}
+  .top-in{max-width:1180px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+  .logo{font-family:var(--serif);font-size:1.3rem;font-weight:700;letter-spacing:.2px}
+  .top nav{display:flex;gap:6px;flex-wrap:wrap}
+  .top nav a{color:#EADFD6;text-decoration:none;padding:6px 14px;border-radius:999px;font-size:.95rem}
+  .top nav a:hover{background:rgba(255,255,255,.12)}
+  .top nav a.on{background:var(--lav);color:var(--on-lav);font-weight:600}
+  .theme-btn{margin-left:auto;background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;
+    padding:7px 16px;font:inherit;font-size:.9rem;cursor:pointer}
+  .theme-btn:hover{background:rgba(255,255,255,.25)}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #9B84E0;outline-offset:2px}
+
+  main{max-width:1180px;margin:0 auto;padding:30px 22px 60px}
+  .col{max-width:860px}
+  h1{font-family:var(--serif);font-size:2.1rem;line-height:1.15;margin:0 0 8px;color:var(--head)}
+  .sub{margin:0 0 24px;color:var(--muted);max-width:560px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:22px}
+  .card h2{margin:0 0 14px;font-size:1.08rem;color:var(--head)}
+  label{font-weight:600;display:block;margin-bottom:8px}
+  input[type=text],select{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;
+    font:inherit;background:var(--field);color:var(--ink)}
+  .file{border:2px dashed var(--line);border-radius:10px;padding:16px;background:var(--field)}
+  .btn{display:inline-block;background:var(--brand);color:#fff;border:0;border-radius:10px;padding:12px 24px;
+    font:inherit;font-weight:600;cursor:pointer;text-decoration:none;margin-top:14px}
+  .btn:hover{background:var(--brand-dark)}
+  .btn.light{background:var(--lav);color:var(--on-lav)}
+  .btn.light:hover{background:var(--lav-hover)}
+  .btn[disabled]{opacity:.7;cursor:wait}
+  .or{text-align:center;color:var(--muted);margin:14px 0}
+  .error{background:var(--neg-bg);color:var(--bad-ink);padding:13px 16px;border-radius:10px;margin-bottom:22px}
+  .note{color:var(--muted);font-size:.88rem;margin:0}
+  .meta{display:flex;flex-wrap:wrap;gap:28px;margin-bottom:8px}
+  .meta span{display:block;color:var(--muted);font-size:.85rem}
+  .meta strong{font-size:1.3rem}
+  .verdict{padding:20px 22px;border-radius:14px;margin-bottom:22px}
+  .verdict h2{margin:0 0 4px;font-family:var(--serif);font-size:1.6rem;color:inherit}
+  .verdict p{margin:0}
+  .verdict.good{background:var(--pos-bg);color:var(--good-ink)}
+  .verdict.bad{background:var(--neg-bg);color:var(--bad-ink)}
+  .verdict.mid{background:var(--lav);color:var(--on-lav)}
+  .bar-row{display:grid;grid-template-columns:80px 1fr 120px;gap:12px;align-items:center;margin:12px 0}
+  .track{background:var(--silver);border-radius:8px;height:16px;overflow:hidden}
+  .fill{height:100%}
+  .fill.Positive{background:var(--pos)} .fill.Neutral{background:var(--neu)} .fill.Negative{background:var(--neg)}
+  .fill.brand{background:var(--brand)}
+  .bar-row small{color:var(--muted);text-align:right}
+  .pill{display:inline-block;font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px}
+  .pill.Positive{background:var(--pos-bg);color:var(--pos)}
+  .pill.Negative{background:var(--neg-bg);color:var(--neg)}
+  .pill.Neutral{background:var(--neu-bg);color:var(--neu-ink)}
+  .sample{border-left:4px solid var(--line);padding:6px 14px;margin:10px 0;color:var(--muted);overflow-wrap:anywhere}
+  .sample.Positive{border-color:var(--pos)} .sample.Neutral{border-color:var(--neu)} .sample.Negative{border-color:var(--neg)}
+  .tbl-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--lav);color:var(--on-lav);font-size:.9rem}
+  td.rev{overflow-wrap:anywhere}
+  footer{color:var(--muted);font-size:.85rem;margin-top:10px}
+  @media (max-width:560px){ h1{font-size:1.7rem} .bar-row{grid-template-columns:70px 1fr 95px} .theme-btn{margin-left:0} }
+  @media (prefers-reduced-motion:no-preference){ .btn,.theme-btn{transition:background .15s} }
+</style>
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="logo">ReviewSense AI</div>
+    <nav>
+      <a href="{{ url_for('home') }}" class="{{ 'on' if active == 'home' }}">Home</a>
+      <a href="{{ url_for('batch') }}" class="{{ 'on' if active == 'batch' }}">Batch analysis</a>
+      <a href="{{ url_for('product') }}" class="{{ 'on' if active == 'product' }}">Product analysis</a>
+      <a href="{{ url_for('insights') }}" class="{{ 'on' if active == 'insights' }}">Model insights</a>
+    </nav>
+    <button type="button" class="theme-btn" id="theme-btn" aria-label="Switch between light and dark mode">Dark mode</button>
+  </div>
+</header>
+<main>
+  {% block content %}{% endblock %}
+  <footer>ReviewSense AI &middot; TF-IDF + LinearSVC + word rules &middot; Trained on Amazon product reviews</footer>
+</main>
+<script>
+  (function () {
+    var btn = document.getElementById('theme-btn');
+    var root = document.documentElement;
+    function paint() { btn.textContent = root.getAttribute('data-theme') === 'dark' ? 'Light mode' : 'Dark mode'; }
+    btn.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('rs-theme', next); } catch (e) {}
+      paint();
+    });
+    paint();
+  })();
+</script>
+</body>
+</html>

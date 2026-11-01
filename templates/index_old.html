@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ReviewSense AI</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<a href="/batch" style="position:absolute;top:18px;right:24px;color:#fff;background:rgba(255,255,255,.2);padding:8px 16px;border-radius:999px;text-decoration:none;font-weight:600;z-index:10;">Batch Analysis (CSV)</a>   <a href="/product">Product Analysis</a>
+    <header>
+        <h1>✨ ReviewSense AI</h1>
+        <p>Product Review Sentiment Analysis</p>
+    </header>
+
+    <main class="container">
+
+        <h2>Discover What Customers Feel</h2>
+
+        <p class="description">
+            Enter a product review and let AI analyze its sentiment.
+        </p>
+
+        <!-- Review Form -->
+        <form method="POST">
+
+            <label for="review">Your Product Review</label>
+
+            <textarea
+                id="review"
+                name="review"
+                placeholder="Example: This phone has an amazing camera..."
+                rows="5"
+                required>{{ review }}</textarea>
+
+            <button type="submit">✨ Analyze Sentiment</button>
+
+        </form>
+
+        <!-- Analysis Result -->
+        {% if sentiment %}
+
+        <div class="result">
+
+            <h3>Analysis Result</h3>
+
+            <p>Your review sentiment is:</p>
+
+            <div class="sentiment {{ sentiment.lower() }}">
+                {{ sentiment }}
+            </div>
+        {% if clauses %}
+<div style="margin-top:14px;padding:14px;border-radius:12px;background:#fef3c7;color:#92400e;text-align:left;">
+  <b>{% if is_mixed %}Mixed opinion detected{% else %}Sentence analysed in parts{% endif %}</b>
+  <ul style="margin:8px 0 0;padding-left:18px;">
+    {% for c in clauses %}
+    <li>"{{ c.text }}" &rarr; <b>{{ c.sentiment }}</b></li>
+    {% endfor %}
+  </ul>
+  {% if is_mixed %}<p style="margin:8px 0 0;font-size:13px;">The final result follows the part after "but", because that usually carries the customer's real opinion.</p>{% endif %}
+</div>
+{% endif %}
+
+        </div>
+
+        {% endif %}
+
+        <!-- Sentiment Dashboard -->
+        <section class="dashboard">
+
+            <h2>📊 Sentiment Dashboard</h2>
+
+            <div class="stats">
+
+                <div class="stat-card positive-card">
+                    <h3>😊 Positive</h3>
+                    <p>{{ counts.Positive }}</p>
+                </div>
+
+                <div class="stat-card negative-card">
+                    <h3>😞 Negative</h3>
+                    <p>{{ counts.Negative }}</p>
+                </div>
+
+                <div class="stat-card neutral-card">
+                    <h3>😐 Neutral</h3>
+                    <p>{{ counts.Neutral }}</p>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Review History -->
+        <section class="history">
+
+            <h2>📝 Review History</h2>
+
+            {% if history %}
+
+                <div class="history-list">
+
+                    {% for item in history %}
+
+                        <div class="history-item">
+
+                            <p class="history-review">
+                                {{ item.review }}
+                            </p>
+
+                            <span class="sentiment {{ item.sentiment.lower() }}">
+                                {{ item.sentiment }}
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <form method="POST" action="{{ url_for('clear_history') }}">
+                    <button type="submit" class="clear-button">
+                        🗑️ Clear History
+                    </button>
+                </form>
+
+            {% else %}
+
+                <p>No reviews analyzed yet. Enter a review above to get started!</p>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>B.Tech Mini Project | Session 2026–27</p>
+        <p>Built with Python, Flask and Machine Learning</p>
+    </footer>
+
+</body>
+</html>
+

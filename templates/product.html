@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% set active = 'product' %}
+{% block title %}Product analysis{% endblock %}
+{% block extra_css %}
+<style>
+  .paste{width:100%;min-height:150px;resize:vertical;padding:12px 14px;border:1px solid var(--line);
+    border-radius:10px;font:inherit;background:var(--field);color:var(--ink)}
+  .hint{margin:6px 0 14px;font-size:.88rem;color:var(--muted)}
+</style>
+{% endblock %}
+{% block content %}
+<div class="col">
+  <h1>Product analysis</h1>
+  <p class="sub">Paste an Amazon product link, pick a product, or paste the reviews yourself. We analyse the reviews and tell you if the product is worth buying.</p>
+
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+  <form method="post" class="card" id="product-form">
+    <h2>Choose a product</h2>
+    <label for="link">Amazon product link</label>
+    <input type="text" id="link" name="link" value="{{ link }}" placeholder="https://www.amazon.in/dp/B00QWO9P18">
+    <div class="or">or</div>
+    <label for="product">Product from dataset</label>
+    <select id="product" name="product">
+      <option value="">Select a product...</option>
+      {% for p in products %}
+      <option value="{{ p }}" {% if p == selected %}selected{% endif %}>{{ p[:90] }}</option>
+      {% endfor %}
+    </select>
+    <div class="or">or</div>
+    <label for="pasted">Paste reviews</label>
+    <textarea id="pasted" name="pasted" class="paste" placeholder="Copy reviews from any product page and paste them here...">{{ pasted }}</textarea>
+    <p class="hint">Put each review on a new line, or separate reviews with a blank line. If the link above cannot be read, these reviews are used instead.</p>
+    <button type="submit" class="btn" id="go">Analyse product</button>
+  </form>
+
+  {% if result %}
+  <div class="verdict {{ result.verdict.tone }}">
+    <h2>{{ result.verdict.label }}</h2>
+    <p>{{ result.verdict.reason }}</p>
+  </div>
+
+  <div class="card">
+    {% if result.name %}<h2>{{ result.name[:120] }}</h2>{% endif %}
+    <div class="meta">
+      <div><span>Reviews analysed</span><strong>{{ result.total }}</strong></div>
+      <div><span>Average rating</span>
+        <strong>{% if result.avg_rating is not none %}{{ result.avg_rating }} / 5{% else %}n/a{% endif %}</strong></div>
+      {% if result.asin %}<div><span>ASIN</span><strong>{{ result.asin }}</strong></div>{% endif %}
+    </div>
+    <p class="note">Source: {{ result.source }}</p>
+  </div>
+
+  <div class="card">
+    <h2>Sentiment breakdown</h2>
+    {% for label in ['Positive','Neutral','Negative'] %}
+    <div class="bar-row">
+      <span>{{ label }}</span>
+      <div class="track"><div class="fill {{ label }}" style="width: {{ result.pct[label] }}%"></div></div>
+      <small>{{ result.pct[label] }}% ({{ result.counts[label] }})</small>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h2>Sample reviews</h2>
+    {% for label in ['Positive','Neutral','Negative'] %}
+      {% for s in result.samples[label] %}
+      <div class="sample {{ label }}"><span class="pill {{ label }}">{{ label }}</span> {{ s }}</div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  <p class="note">The verdict uses simple rules on sentiment percentages and average rating. Model accuracy is about 65%, so treat this as guidance, not advice.</p>
+  {% endif %}
+</div>
+<script>
+  document.getElementById('product-form').addEventListener('submit', function () {
+    var b = document.getElementById('go'); b.disabled = true; b.textContent = 'Analysing...';
+  });
+</script>
+{% endblock %}

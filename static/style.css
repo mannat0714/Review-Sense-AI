@@ -1,0 +1,266 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+    color: #1e1b4b;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, #4338ca, #7c3aed);
+    color: white;
+    text-align: center;
+    padding: 35px 15px;
+    box-shadow: 0 5px 20px rgba(67, 56, 202, 0.2);
+}
+
+header h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 17px;
+}
+
+/* Main Container */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 35px;
+    background: white;
+    border-radius: 22px;
+    box-shadow: 0 12px 40px rgba(49, 46, 129, 0.12);
+}
+
+.container > h2 {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.description {
+    color: #6b7280;
+    margin-bottom: 28px;
+    line-height: 1.7;
+}
+
+/* Review Form */
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+textarea {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    border: 1px solid #c7d2fe;
+    border-radius: 12px;
+    resize: vertical;
+    font-family: Arial, sans-serif;
+    margin-bottom: 18px;
+    transition: 0.3s;
+}
+
+textarea:focus {
+    outline: 2px solid #818cf8;
+    border-color: #6366f1;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.12);
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.25);
+}
+
+/* Analysis Result */
+.result {
+    margin-top: 28px;
+    padding: 25px;
+    background: #f5f3ff;
+    border: 1px solid #ede9fe;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.result h3 {
+    font-size: 21px;
+    margin-bottom: 14px;
+}
+
+.result p {
+    color: #4b5563;
+}
+
+/* Sentiment Labels */
+.sentiment {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.positive {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.negative {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.neutral {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* Dashboard */
+.dashboard,
+.history {
+    margin-top: 32px;
+    padding: 24px;
+    background: #fafaff;
+    border: 1px solid #e9e7ff;
+    border-radius: 18px;
+}
+
+.dashboard h2,
+.history h2 {
+    font-size: 23px;
+    margin-bottom: 20px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.stat-card {
+    padding: 22px 12px;
+    text-align: center;
+    border-radius: 15px;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+}
+
+.stat-card h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.stat-card p {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.positive-card {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.negative-card {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.neutral-card {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+/* Review History */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 16px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(31, 41, 55, 0.04);
+}
+
+.history-review {
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+}
+
+.history-item .sentiment {
+    flex-shrink: 0;
+    margin-top: 0;
+    padding: 8px 14px;
+    font-size: 13px;
+}
+
+.clear-button {
+    margin-top: 18px;
+    background: linear-gradient(135deg, #dc2626, #f43f5e);
+}
+
+.history > p {
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 22px;
+    color: #6b7280;
+    line-height: 1.8;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+    header {
+        padding: 28px 12px;
+    }
+
+    header h1 {
+        font-size: 29px;
+    }
+
+    .container {
+        margin: 20px 12px;
+        padding: 20px;
+    }
+
+    .container > h2 {
+        font-size: 20px;
+    }
+}

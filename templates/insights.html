@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% set active = 'insights' %}
+{% block title %}Model insights{% endblock %}
+
+{% block extra_css %}
+<style>
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px}
+  .model{padding:16px 0;border-bottom:1px solid var(--line)}
+  .model:last-child{border-bottom:0;padding-bottom:0}
+  .model:first-of-type{padding-top:0}
+  .model-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .model-head strong{font-size:1.02rem}
+  .best{background:var(--lav);color:var(--on-lav);font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:999px}
+  .metric{display:grid;grid-template-columns:90px 1fr 64px;gap:12px;align-items:center;margin:7px 0;font-size:.92rem}
+  .metric small{text-align:right;color:var(--muted);font-size:.9rem}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+  .facts div span{display:block;color:var(--muted);font-size:.85rem}
+  .facts div strong{font-size:1.02rem}
+  .cloud{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;justify-content:center;padding:6px 4px}
+  .cloud .w{font-family:var(--serif);font-weight:700;line-height:1.2}
+  .cloud.Positive .w{color:var(--pos)}
+  .cloud.Negative .w{color:var(--neg)}
+  .cloud.Neutral .w{color:var(--neu-ink)}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Model insights</h1>
+<p class="sub">How the models compared, and which words push the final model towards each sentiment.</p>
+
+<div class="card">
+  <h2>Model comparison</h2>
+  {% if comparison %}
+    {% for m in comparison %}
+    <div class="model">
+      <div class="model-head"><strong>{{ m.model }}</strong>{% if m.best %}<span class="best">Best accuracy</span>{% endif %}</div>
+      {% for key, label in [('accuracy','Accuracy'),('precision','Precision'),('recall','Recall'),('f1','F1-score')] %}
+        {% if m[key] is not none %}
+        <div class="metric">
+          <span>{{ label }}</span>
+          <div class="track"><div class="fill brand" style="width: {{ m[key] }}%"></div></div>
+          <small>{{ m[key] }}%</small>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endfor %}
+    <p class="note" style="margin-top:14px">The three models score almost the same, so the best one (by accuracy) was saved for the website.</p>
+  {% else %}
+    <p class="note">model_comparison.csv was not found. Run compare_models.py first to create it.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Training setup</h2>
+  <div class="facts">
+    <div><span>Dataset</span><strong>Amazon consumer reviews (Kaggle)</strong></div>
+    <div><span>Balanced data</span><strong>811 per class, 2,433 reviews</strong></div>
+    <div><span>Features</span><strong>TF-IDF, 1 to 2 word groups, 20,000 max</strong></div>
+    <div><span>Train / test split</span><strong>80% / 20% (487 test reviews)</strong></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Hybrid approach for short reviews</h2>
+  <p style="margin:0 0 8px">A TF-IDF model has very little to work with in tiny reviews like &ldquo;this is good&rdquo; or &ldquo;average&rdquo;. So the system combines two methods:</p>
+  <p class="note" style="font-size:.95rem;margin:0">1. Short reviews (8 words or fewer): if a built-in sentiment word list disagrees with the model, the word list decides.<br>
+  2. Longer reviews: the ML model decides. The word list only steps in when the model is unsure (confidence below 55%) and the words are very clear.<br>
+  3. Negations (&ldquo;not good&rdquo;) and intensifiers (&ldquo;very good&rdquo;) are handled. The result page shows which method decided.</p>
+</div>
+
+<div class="card">
+  <h2>Words the model links to each sentiment</h2>
+  {% if words %}
+  <div class="two">
+    {% for label in ['Positive','Negative','Neutral'] %}
+      {% if words[label] %}
+      <div>
+        <p class="note" style="text-align:center;margin-bottom:6px"><span class="pill {{ label }}">{{ label }}</span></p>
+        <div class="cloud {{ label }}">
+          {% for w in words[label] %}
+          <span class="w" style="font-size: {{ w.size }}rem; opacity: {{ w.op }};">{{ w.word }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <p class="note" style="margin-top:14px">Bigger words have a stronger effect. They come from the weights the classifier learned.</p>
+  {% else %}
+  <p class="note">Word weights could not be read from the saved model.</p>
+  {% endif %}
+</div>
+{% endblock %}
